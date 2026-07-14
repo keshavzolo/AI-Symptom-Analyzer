@@ -1,0 +1,351 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+
+<head>
+
+    <meta charset="UTF-8" />
+
+    <meta name="viewport"
+          content="width=device-width, initial-scale=1.0" />
+
+    <title>AI Symptom Checker</title>
+
+    <!-- GOOGLE FONT -->
+
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap"
+          rel="stylesheet">
+
+    <!-- CSS -->
+
+    <link rel="stylesheet" href="style.css">
+
+
+    <!-- jsPDF -->
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+</head>
+
+<body>
+
+    <div class="card">
+        <div id="authSection"
+             class="auth-section">
+            <div id="loginBox"
+                 class="auth-box">
+                <h2>Login</h2>
+                <input id="loginUsername"
+                       class="auth-input"
+                       type="text"
+                       placeholder="Username" />
+                <input id="loginPassword"
+                       class="auth-input"
+                       type="password"
+                       placeholder="Password" />
+                <button class="btn-primary"
+                        onclick="login()">
+                    Login
+                </button>
+                <p class="auth-switch-text">
+                    New user?
+                    <button class="auth-link-btn"
+                            onclick="showSignupBox()">
+                        Open Signup Box
+                    </button>
+                </p>
+            </div>
+
+            <div id="signupBox"
+                 class="auth-box"
+                 style="display:none;">
+                <h2>Signup</h2>
+                <p class="auth-hint">Create your account here.</p>
+                <input id="signupUsername"
+                       class="auth-input"
+                       type="text"
+                       placeholder="Choose username" />
+                <input id="signupPassword"
+                       class="auth-input"
+                       type="password"
+                       placeholder="Choose password" />
+                <button class="btn-primary outline"
+                        onclick="signup()">
+                    Create Account
+                </button>
+                <p class="auth-switch-text">
+                    Already have an account?
+                    <button class="auth-link-btn"
+                            onclick="showLoginBox()">
+                        Open Login Box
+                    </button>
+                </p>
+            </div>
+        </div>
+
+        <div id="appSection"
+             style="display:none;">
+            <div class="auth-topbar">
+                <span id="loggedInUser"></span>
+                <div class="topbar-actions">
+                    <button class="btn-secondary history-toggle-btn"
+                            id="historyToggleBtn"
+                            onclick="openHistoryDashboard()">
+                        View History
+                    </button>
+                    <button class="btn-stop"
+                            onclick="logout()">
+                        Logout
+                    </button>
+                </div>
+            </div>
+
+            <div class="history-dashboard"
+                 id="historyDashboard"
+                 style="display:none;">
+                <div class="history-header">
+                    <h3>History Dashboard</h3>
+                    <div class="history-dashboard-actions">
+                        <button class="btn-secondary history-refresh-btn"
+                                onclick="loadHistory()">
+                            Refresh
+                        </button>
+                        <button class="btn-secondary history-refresh-btn"
+                                onclick="closeHistoryDashboard()">
+                            Back to Checker
+                        </button>
+                    </div>
+                </div>
+                <div id="historyList"
+                     class="history-list">
+                    <p class="history-empty">No searches yet.</p>
+                </div>
+            </div>
+
+            <div id="checkerDashboard">
+
+        <!-- ================= HEADER ================= -->
+
+        <div class="header">
+
+            <h1>🩺 AI Symptom Checker</h1>
+
+            <p>
+                Describe your symptoms for a preliminary assessment
+            </p>
+
+        </div>
+
+
+
+        <!-- ================= TEXT INPUT ================= -->
+
+        <div class="input-group">
+
+            <textarea id="symptoms"
+                placeholder="Example: Fever, headache, sore throat..."></textarea>
+
+
+
+            <!-- VOICE BUTTONS -->
+
+            <div class="voice-buttons">
+
+                <!-- ENGLISH -->
+
+                <button class="btn-secondary"
+                        onclick="startVoice('en-US')">
+
+                    🎤 English
+
+                </button>
+
+
+
+                <!-- HINDI -->
+
+                <button class="btn-secondary"
+                        onclick="startVoice('hi-IN')">
+
+                    🎤 Hindi
+
+                </button>
+
+
+
+                <!-- STOP -->
+
+                <button class="btn-stop"
+                        onclick="stopVoice()">
+
+                    🛑 Stop
+
+                </button>
+
+            </div>
+
+
+
+            <!-- VOICE STATUS -->
+
+            <p id="voiceStatus"
+               class="voice-status">
+
+                
+
+            </p>
+
+        </div>
+
+
+
+        <!-- ================= ANALYZE BUTTON ================= -->
+
+        <button class="btn-primary"
+                onclick="analyze()">
+
+            🔍 Analyze Symptoms
+
+        </button>
+
+
+
+        <!-- ================= DIVIDER ================= -->
+
+        <div class="divider">
+
+            <span>OR</span>
+
+        </div>
+
+
+
+        <!-- ================= IMAGE ANALYSIS ================= -->
+
+        <div class="upload-group">
+
+            <!-- FILE LABEL -->
+
+            <label for="photo"
+                   class="upload-label">
+
+                📁 Choose an image to analyze
+
+            </label>
+
+
+
+            <!-- FILE INPUT -->
+
+            <input type="file"
+                   id="photo"
+                   accept="image/*"
+                   class="hidden-input">
+
+
+
+            <!-- IMAGE PREVIEW -->
+
+            <img id="preview"
+                 class="preview-image"
+                 style="display:none;" />
+
+
+
+            <!-- ANALYZE IMAGE BUTTON -->
+
+            <button class="btn-primary outline"
+                    onclick="analyzeImage()">
+
+                🖼 Analyze Photo
+
+            </button>
+
+        </div>
+
+
+
+        <!-- ================= LOADING ================= -->
+
+        <div class="loading"
+             id="loading"
+             style="display:none;">
+
+            <span class="spinner"></span>
+
+            <span id="loadingText">
+
+                Analyzing data...
+
+            </span>
+
+        </div>
+
+
+
+        <!-- ================= RESULT SECTION ================= -->
+
+        <div class="result"
+             id="resultBox"
+             style="display:none;">
+
+            <h3>📋 Assessment Result</h3>
+
+
+            <!-- RESULT CARDS -->
+
+            <div id="resultText"></div>
+
+
+
+            <!-- DOWNLOAD PDF -->
+
+            <button class="btn-primary pdf-btn"
+                    onclick="downloadPDF()">
+
+                📄 Download PDF Report
+
+            </button>
+
+        </div>
+        </div>
+
+        </div>
+    </div>
+
+
+
+    <!-- ================= IMAGE PREVIEW SCRIPT ================= -->
+
+    <script>
+
+        const photoInput =
+            document.getElementById("photo");
+
+        const preview =
+            document.getElementById("preview");
+
+
+        photoInput.addEventListener("change", function () {
+
+            const file = this.files[0];
+
+            if (file) {
+
+                preview.src =
+                    URL.createObjectURL(file);
+
+                preview.style.display = "block";
+            }
+        });
+
+    </script>
+
+
+
+    <!-- ================= MAIN JS ================= -->
+
+    <script type="module" src="script.js"></script>
+
+</body>
+
+</html>
